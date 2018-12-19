@@ -7,8 +7,9 @@ class controladorProductos extends controlador {
     }
 
     async obtenerProductos() {
+        let id = this.req.userId;
         try {
-            let PRODUCTOS = await modeloProducto.findAll();
+            let PRODUCTOS = await modeloProducto.findAll({ where: {idUsuario:id}});
             if (PRODUCTOS) return this.returnJson(200, PRODUCTOS); 
         } catch (e) {
             return this.returnJson(500, "Error del servidor: " + e);
@@ -25,16 +26,6 @@ class controladorProductos extends controlador {
         }
     }
 
-    async obtenerProductosUsuario() {
-        let id= this.req.params.id;
-        try {
-            let PRODUCTOS = await modeloProducto.findAll({ where: { idUsuario: id } });
-            console.log(JSON.stringify(PRODUCTOS));
-            if (PRODUCTOS) return this.returnJson(200, PRODUCTOS);
-        } catch (e) {
-            return this.returnJson(500, "Error interno del servidor" + e);
-        }
-    }
 
     async subirProducto() {       
         let producto = {

@@ -2,6 +2,7 @@ const modeloUsuario = require('../modelos/modeloUsuario');
 const controlador = require('./controlador');
 const encriptador = require('../servicios/encriptamiento');
 const uuid = require('uuid/v1');
+const Jwt = require('../servicios/jsonwebtoken');
 
 class controladorUsuarios extends controlador {
     constructor(req, res, next) {
@@ -9,9 +10,10 @@ class controladorUsuarios extends controlador {
     }
 
     async obtenerTodos() {
+       
         //Recogemos todos los usuarios de la BD  y los enviamos como respuesta.
         try {
-            var usuarios = await modeloUsuario.findAll();
+            let usuarios = await modeloUsuario.findAll({});
             if (usuarios) return this.returnJson(200, usuarios);
         } catch (e) {
             return this.returnJson(500, e);
@@ -60,6 +62,24 @@ class controladorUsuarios extends controlador {
             return this.returnJson(400, "Error al borrar");
         } catch (e) {
             return this.returnJson(500, "Error en el servidor");
+        }
+    }
+
+    //login y registro.
+    async loginUsuario() {
+        let usuario = this.req.body;
+
+        try {
+            let usuarioRespuesta = await modeloUsuario.findOne({ where: { email: usuario.email } });
+            console.log(JSON.stringify(usuarioRespuesta));
+            if (!usuarioRespuesta) return this.returnJson(204, "No existe");
+           
+            if (!encriptador.comparePass(usuario.password, usuarioRespuesta.clave))
+                return this.returnJson(401, "El password es incorrecto");
+            let jwt = Jwt.generarToken(usuarioRespuesta);
+            this.returnJson(200, jwt);
+        } catch (e) {
+            console.log(e);
         }
     }
     /*Metodo usable por todas las funciones de nuestra clase controladorUsuario*/

@@ -1,9 +1,15 @@
 var express = require('express');
 var router = express.Router();
+const CONTROLADORUSUARIO = require('../API/controladores/controladorUsuarios');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.post('/', function (req, res, next) {
+    //Registro
 });
 
+router.post('/login', function (req, res, next) {
+    //LOGEO
+    console.log('entra al login');
+    //let control = new CONTROLADORUSUARIO(req, res, next);
+    //control.loginUsuario();
+});
 module.exports = router;
